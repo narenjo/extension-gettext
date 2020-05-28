@@ -1,0 +1,12 @@
+{
+	"name": "extension-gettext",
+	"url" : "https://github.com/narenjo/extension-gettext",
+	"license": "Apache",
+	"tags": ["localization","internationalization","gettext","translation","text"],
+	"description": "Internationalization using GNU GetText-style methods and PO files.",
+	"version": "0.0.1",
+	"classPath": "src/",
+	"releasenote": "",
+	"contributors": ["vincent"],
+	"dependencies": {}
+}
