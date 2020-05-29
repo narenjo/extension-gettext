@@ -1,10 +1,11 @@
 package gettext.ext;
 
+import haxe.display.Protocol.HaxeNotificationMethod;
 import gettext.data.GetText;
 import gettext.data.GetText.POData;
 import gettext.data.IExplorer;
 
-class StarlingBuilderFilesExplorer implements IExplorer{
+class JsonExplorer implements IExplorer{
 	var strMap:Map<String,Bool>;
 	var data:POData;
 	public function new(){}
@@ -28,33 +29,29 @@ class StarlingBuilderFilesExplorer implements IExplorer{
 					continue;
 				}
 
-				// Ignore non starling builder
+				// Ignore non json builder
 				if( f.substr(f.length - 5) != ".json" )
                     continue;
                 
 				var json = haxe.Json.parse(sys.io.File.getContent(path));
-				load(path, json.layout);
+				load(path, json);
             }
         }
 	}
-	function load(f:String, obj:Dynamic){
-		trace(obj.cls);
-		if(obj.cls == "starling.text.TextField" || obj.cls == "starling.display.Button"){
-			if(obj.params != null){
-				Sys.println("NAME ======== " + obj.params.name);
-				Sys.println("TEXT ======== " + obj.params.text);
-			}
-			if(obj.customParams != null && obj.customParams.localizeKey != null){
-				Sys.println("LOC KEY ======== " + obj.customParams.localizeKey);
-				processString(f, obj.customParams.localizeKey);
-			}
-		}
-		
-		if(obj.children != null){
-			Sys.println("HAS CHiDLREN");
-			for(child in cast(obj.children, Array<Dynamic>)){
-				Sys.println("LOAD CHILD");
-				load(f, child);
+	function load(f:String, arr:Array<Dynamic>){
+		for(obj in arr){
+			if(obj.text != null){
+				if(Std.is(obj.text, Array)){
+					var t:Array<String> = cast obj.text;
+					for(txt in t){
+						Sys.println(txt);
+						processString(f, txt);
+					}
+				}
+				else if(Std.is(obj.text, String)){
+					Sys.println(obj.text);
+					processString(f, obj.text);
+				}
 			}
 		}
 	}
@@ -108,5 +105,6 @@ class StarlingBuilderFilesExplorer implements IExplorer{
 				});
 			}
 		}
+		Sys.println(cleanedStr);
 	}
 }

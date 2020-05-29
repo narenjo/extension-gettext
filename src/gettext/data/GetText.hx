@@ -26,6 +26,11 @@ typedef POEntry = {
 
 #end
 
+typedef CustomExplorer = {
+	explorer: IExplorer,
+	path: String
+}
+
 #if( !flash && !hl )
 typedef LocaleString = String;
 #else
@@ -214,7 +219,7 @@ class GetText {
 
 	#if potools
 
-	public static function doParseGlobal( conf: {?codePath:String, ?codeIgnore:EReg, potFile:String, ?deprecatedFile: String, ?cdbFiles:Array<String>, ?refPoFile:String, ?refDeprecatedPoFile: String, ?cdbSpecialId: Array<{ereg: EReg, field: String}>, ?customExplorer:IExplorer, ?customExplorerFiles:String} ){
+	public static function doParseGlobal( conf: {?codePath:String, ?codeIgnore:EReg, potFile:String, ?deprecatedFile: String, ?cdbFiles:Array<String>, ?refPoFile:String, ?refDeprecatedPoFile: String, ?cdbSpecialId: Array<{ereg: EReg, field: String}>, ?customs:Array<CustomExplorer>} ){
 
 		var data : POData = [];
 		data.push( POTools.mkHeaders([
@@ -228,9 +233,11 @@ class GetText {
 			Sys.println("[GetText] Parsing source code...");
 			explore(conf.codePath, data, strMap, conf.codeIgnore);
 		}
-		if( conf.customExplorer != null){
+		if( conf.customs != null && conf.customs.length > 0){
 			Sys.println("[GetText] Parsing Custom Explorer...");
-			conf.customExplorer.explore(conf.customExplorerFiles, data, strMap, conf.codeIgnore);
+			for(custom in conf.customs){
+				custom.explorer.explore(custom.path, data, strMap, conf.codeIgnore);
+			}
 		}
 #if castle
 		if( conf.cdbFiles != null ){

@@ -1,6 +1,6 @@
 package gettext.tools;
 
-import gettext.ext.StarlingBuilderFilesExplorer;
+import gettext.ext.*;
 import sys.FileSystem;
 import gettext.data.GetText;
 
@@ -9,7 +9,7 @@ class LangParser {
 		var args = Sys.args();
 		Sys.println(args);
 		if(args.length != 3 && args.length != 4 && args.length != 5){
-			Sys.println("Usage : source_folder po_folder json_folder [custom_explorer_class]");
+			Sys.println("Usage : source_folder po_folder ux_json_folder json_folder");
 			Sys.exit(1);
 		}
 
@@ -17,22 +17,34 @@ class LangParser {
 		Sys.setCwd(cwd);
 		var explorer = null;
 
-		if(args.length == 4){
-			Sys.println(args[3]);
-			var clz = Type.resolveClass(args[3]);
-			Sys.println("CLASS OK? " + (clz != null) + " " + clz);
-			explorer = Type.createEmptyInstance(clz);
+		// if(args.length == 4){
+		// 	Sys.println(args[3]);
+		// 	var clz = Type.resolveClass(args[3]);
+		// 	Sys.println("CLASS OK? " + (clz != null) + " " + clz);
+		// 	explorer = Type.createEmptyInstance(clz);
 			
-		}
-		Sys.exit(1);
+		// }
+		// Sys.exit(1);
 		var source = FileSystem.absolutePath(args[0]);
 		var lang = FileSystem.absolutePath(args[1]);
 
-		var assets = FileSystem.absolutePath(args[2]);
+		var ux = FileSystem.absolutePath(args[2]);
+		var story = FileSystem.absolutePath(args[3]);
 
 		var name = "sourceTexts";
 		Sys.println("Building "+name+" file...");
 		explorer = new StarlingBuilderFilesExplorer();
+
+		var customs:Array<CustomExplorer> = [
+			{
+				explorer : new StarlingBuilderFilesExplorer(),
+				path: ux
+			},
+			{
+				explorer : new JsonExplorer(),
+				path: story
+			}
+		];
 		try {
 
 			var cdbs = #if castle findAll(assets, "cdb") #else null #end;
@@ -42,8 +54,7 @@ class LangParser {
 				cdbFiles: cdbs,
 				cdbSpecialId: [],
 				potFile: lang + "/"+name+".pot",
-				customExplorer: explorer,
-				customExplorerFiles: assets
+				customs: customs
 			});
 		}
 		catch(e:String) {
