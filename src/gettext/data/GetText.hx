@@ -24,12 +24,13 @@ typedef POEntry = {
 	?cComment: String,
 }
 
-#end
-
 typedef CustomExplorer = {
 	explorer: IExplorer,
 	path: String
 }
+
+#end
+
 
 #if( !flash && !hl )
 typedef LocaleString = String;
