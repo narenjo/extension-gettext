@@ -13,7 +13,7 @@ class JsonExplorer implements IExplorer{
 		var stack = [folder];
 		this.strMap = strMap;
 		this.data = data;
-		Sys.println(folder);
+		//Sys.println(folder);
         while( stack.length > 0 ){
 			var folder = stack.shift();
 			for( f in sys.FileSystem.readDirectory(folder) ) {
@@ -32,27 +32,49 @@ class JsonExplorer implements IExplorer{
 				// Ignore non json builder
 				if( f.substr(f.length - 5) != ".json" )
                     continue;
-                
-				var json = haxe.Json.parse(sys.io.File.getContent(path));
-				load(path, json);
+				
+				try{
+					var json = haxe.Json.parse(sys.io.File.getContent(path));
+					load(path, json);
+				}
+				catch(e:Dynamic){
+					Sys.println("=============");
+					Sys.println("Error in " + path);
+					Sys.println(e);
+					Sys.println("skipping...");
+					Sys.println("=============");
+				}
             }
         }
 	}
-	function load(f:String, arr:Array<Dynamic>){
-		for(obj in arr){
-			if(obj.text != null){
-				if(Std.is(obj.text, Array)){
-					var t:Array<String> = cast obj.text;
-					for(txt in t){
-						Sys.println(txt);
-						processString(f, txt);
-					}
+	function load(f:String, json:Dynamic){
+		if(Std.is(json, Array)){
+			var arr:Array<Dynamic> = cast json;
+			for(obj in arr){
+				load(f, obj);
+			}
+		}
+		else{
+			for(field in Reflect.fields(json)){
+				var val:Dynamic = Reflect.field(json, field);
+				if(field == "text" || field == "label"){
+					processText(f, val);
 				}
-				else if(Std.is(obj.text, String)){
-					Sys.println(obj.text);
-					processString(f, obj.text);
+				else if(Std.is(val, Array)){
+					load(f, val);
 				}
 			}
+		}
+	}
+	function processText(f:String, text:Dynamic){
+		if(Std.is(text, Array)){
+			var t:Array<String> = cast text;
+			for(txt in t){
+				processString(f, txt);
+			}
+		}
+		else if(Std.is(text, String)){
+			processString(f, text);
 		}
 	}
 	function processString(f:String, str:String){
@@ -105,6 +127,6 @@ class JsonExplorer implements IExplorer{
 				});
 			}
 		}
-		Sys.println(cleanedStr);
+		//Sys.println(cleanedStr);
 	}
 }

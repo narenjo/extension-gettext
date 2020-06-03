@@ -12,7 +12,7 @@ class StarlingBuilderFilesExplorer implements IExplorer{
 		var stack = [folder];
 		this.strMap = strMap;
 		this.data = data;
-		Sys.println(folder);
+		//Sys.println(folder);
         while( stack.length > 0 ){
 			var folder = stack.shift();
 			for( f in sys.FileSystem.readDirectory(folder) ) {
@@ -38,22 +38,21 @@ class StarlingBuilderFilesExplorer implements IExplorer{
         }
 	}
 	function load(f:String, obj:Dynamic){
-		trace(obj.cls);
 		if(obj.cls == "starling.text.TextField" || obj.cls == "starling.display.Button"){
-			if(obj.params != null){
-				Sys.println("NAME ======== " + obj.params.name);
-				Sys.println("TEXT ======== " + obj.params.text);
-			}
+			// if(obj.params != null){
+			// 	Sys.println("NAME ======== " + obj.params.name);
+			// 	Sys.println("TEXT ======== " + obj.params.text);
+			// }
 			if(obj.customParams != null && obj.customParams.localizeKey != null){
-				Sys.println("LOC KEY ======== " + obj.customParams.localizeKey);
+				//Sys.println("LOC KEY ======== " + obj.customParams.localizeKey);
 				processString(f, obj.customParams.localizeKey);
 			}
 		}
 		
 		if(obj.children != null){
-			Sys.println("HAS CHiDLREN");
+			//Sys.println("HAS CHiDLREN");
 			for(child in cast(obj.children, Array<Dynamic>)){
-				Sys.println("LOAD CHILD");
+				//Sys.println("LOAD CHILD");
 				load(f, child);
 			}
 		}
