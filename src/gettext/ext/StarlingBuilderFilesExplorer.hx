@@ -17,6 +17,7 @@ class StarlingBuilderFilesExplorer implements IExplorer{
 			var folder = stack.shift();
 			for( f in sys.FileSystem.readDirectory(folder) ) {
 				var path = folder+"/"+f;
+				var relPath = StringTools.replace(path, Sys.getCwd(), "");
 				if( codeIgnore != null && codeIgnore.match(path) ){
 					trace("Ignore: "+path);
 					continue;
@@ -33,7 +34,7 @@ class StarlingBuilderFilesExplorer implements IExplorer{
                     continue;
                 
 				var json = haxe.Json.parse(sys.io.File.getContent(path));
-				load(path, json.layout);
+				load(relPath, json.layout);
             }
         }
 	}

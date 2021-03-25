@@ -18,6 +18,7 @@ class JsonExplorer implements IExplorer{
 			var folder = stack.shift();
 			for( f in sys.FileSystem.readDirectory(folder) ) {
 				var path = folder+"/"+f;
+				var relPath = StringTools.replace(path, Sys.getCwd(), "");
 				if( codeIgnore != null && codeIgnore.match(path) ){
 					trace("Ignore: "+path);
 					continue;
@@ -35,7 +36,7 @@ class JsonExplorer implements IExplorer{
 				
 				try{
 					var json = haxe.Json.parse(sys.io.File.getContent(path));
-					load(path, json);
+					load(relPath, json);
 				}
 				catch(e:Dynamic){
 					Sys.println("=============");

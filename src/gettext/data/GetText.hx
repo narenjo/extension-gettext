@@ -295,6 +295,7 @@ class GetText {
 			var folder = stack.shift();
 			for( f in sys.FileSystem.readDirectory(folder) ) {
 				var path = folder+"/"+f;
+				var relPath = StringTools.replace(path, Sys.getCwd(), "");
 				if( codeIgnore != null && codeIgnore.match(path) ){
 					trace("Ignore: "+path);
 					continue;
@@ -358,13 +359,13 @@ class GetText {
 							data.push({
 								id			: cleanedStr,
 								str			: "",
-								cRef		: path+":"+n,
+								cRef		: relPath+":"+n,
 								cExtracted	: comment,
 							});
 						}else{
 							var previous = Lambda.find(data,function(e) return e.id==cleanedStr && e.cExtracted==comment);
 							if( previous != null && previous.cExtracted == comment ){
-								previous.cRef += " "+path+":"+n;
+								previous.cRef += " "+relPath+":"+n;
 							}else{
 								// if( previous != null && previous.cExtracted != null && previous.cExtracted.length > 0 ){
 								// 	previous.id += " "+CONTEXT+" "+previous.cExtracted;
@@ -375,7 +376,7 @@ class GetText {
 								data.push({
 									id			: cleanedStr,
 									str			: "",
-									cRef		: path+":"+n,
+									cRef		: relPath+":"+n,
 									cExtracted	: comment,
 								});
 							}
