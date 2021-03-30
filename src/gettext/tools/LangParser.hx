@@ -8,7 +8,7 @@ class LangParser {
 	public static function main() {
 		var args = Sys.args();
 		Sys.println(args);
-		if(args.length != 3 && args.length != 4 && args.length != 5){
+		if (args.length != 3 && args.length != 4 && args.length != 5 && args.length != 6) {
 			Sys.println("Usage : source_folder po_folder ux_json_folder json_folder");
 			Sys.exit(1);
 		}
@@ -22,7 +22,7 @@ class LangParser {
 		// 	var clz = Type.resolveClass(args[3]);
 		// 	Sys.println("CLASS OK? " + (clz != null) + " " + clz);
 		// 	explorer = Type.createEmptyInstance(clz);
-			
+
 		// }
 		// Sys.exit(1);
 		var source = FileSystem.absolutePath(args[0]);
@@ -30,34 +30,37 @@ class LangParser {
 
 		var ux = FileSystem.absolutePath(args[2]);
 		var story = FileSystem.absolutePath(args[3]);
+		var quests = FileSystem.absolutePath(args[4]);
 
 		var name = "sourceTexts";
-		Sys.println("Building "+name+" file...");
+		Sys.println("Building " + name + " file...");
 		explorer = new StarlingBuilderFilesExplorer();
 
 		var customs:Array<CustomExplorer> = [
 			{
-				explorer : new StarlingBuilderFilesExplorer(),
+				explorer: new StarlingBuilderFilesExplorer(),
 				path: ux
 			},
 			{
-				explorer : new JsonExplorer(),
+				explorer: new JsonExplorer(),
 				path: story
+			},
+			{
+				explorer: new JsonExplorer(),
+				path: quests
 			}
 		];
 		try {
-
 			var cdbs = #if castle findAll(assets, "cdb") #else null #end;
 			var data = GetText.doParseGlobal({
 				codePath: source,
 				codeIgnore: null,
 				cdbFiles: cdbs,
 				cdbSpecialId: [],
-				potFile: lang + "/"+name+".pot",
+				potFile: lang + "/" + name + ".pot",
 				customs: customs
 			});
-		}
-		catch(e:String) {
+		} catch (e:String) {
 			Sys.println("");
 			Sys.println(e);
 			Sys.println("Extraction failed: fatal error!");
@@ -66,19 +69,20 @@ class LangParser {
 		}
 		Sys.println("Done.");
 	}
-#if castle
+
+	#if castle
 	static function findAll(path:String, ext:String, ?cur:Array<String>) {
-		var ext = "."+ext;
-		var all = cur==null ? [] : cur;
+		var ext = "." + ext;
+		var all = cur == null ? [] : cur;
 		Sys.println(path);
-		for(e in sys.FileSystem.readDirectory(path)) {
-			e = path+"/"+e;
-			if( e.indexOf(ext)>=0 && e.lastIndexOf(ext)==e.length-ext.length )
+		for (e in sys.FileSystem.readDirectory(path)) {
+			e = path + "/" + e;
+			if (e.indexOf(ext) >= 0 && e.lastIndexOf(ext) == e.length - ext.length)
 				all.push(e);
-			if( sys.FileSystem.isDirectory(e) && e.indexOf(".tmp")<0 )
+			if (sys.FileSystem.isDirectory(e) && e.indexOf(".tmp") < 0)
 				findAll(e, ext, all);
 		}
 		return all;
 	}
-#end
+	#end
 }
